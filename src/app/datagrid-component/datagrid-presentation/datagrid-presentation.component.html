@@ -1,0 +1,46 @@
+<div class="presentation-wrapper">
+  <h4 class="title">
+    Visible columns - here you can choose which columns will be visible
+  </h4>
+  <div class="columns-options">
+    <div
+      class="column-option"
+      *ngFor="let column of checkableColumns; let idx = index"
+    >
+      <input
+        type="checkbox"
+        [id]="'checkbox-visible-column-1' + idx"
+        [(ngModel)]="column.checked"
+      />
+      <label [for]="'checkbox-visible-column-1' + idx">
+        {{ column.name }}
+      </label>
+    </div>
+  </div>
+
+  <h4 class="title">
+    Sortable columns - here you can choose which columns will be sortable
+  </h4>
+  <div class="columns-options">
+    <div
+      class="column-option"
+      *ngFor="let column of checkableColumns; let idx = index"
+    >
+      <input
+        type="checkbox"
+        [id]="'checkbox-sortable-1' + idx"
+        [(ngModel)]="column.sortable"
+      />
+      <label [for]="'checkbox-sortable-1' + idx"> {{ column.name }} </label>
+    </div>
+  </div>
+
+  <t-datagrid [data]="myData" [sortable]="true" [pageSize]="5">
+    <t-column
+      *ngFor="let column of visibleColumns"
+      [name]="column.name"
+      [property]="column.property"
+      [sortable]="column.sortable"
+    ></t-column>
+  </t-datagrid>
+</div>

@@ -1,1 +1,26 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --dark-color: #16213E;
+  --dark-pink: #e94560;
+  --dark-blue: rgb(6, 17, 31);
+  --white: #fff;
+  --gray: gray;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--dark-color);
+  padding: 0;
+  margin: 0;
+}
+
+.d-none {
+  display: none;
+}
+
+.overflow-auto {
+  overflow: auto;
+}

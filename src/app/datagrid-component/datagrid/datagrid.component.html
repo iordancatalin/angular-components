@@ -1,0 +1,84 @@
+<div class="datagrid-wrapper">
+  <ng-template>
+    <ng-content> </ng-content>
+  </ng-template>
+
+  <div class="overflow-auto">
+    <table class="datagrid-table">
+      <thead>
+        <tr>
+          <th *ngFor="let column of columnConfigs$ | async" scope="col">
+            <button
+              class="sort-button"
+              [disabled]="
+                isSortable === false ||
+                (column.sortableObservable | async) === false
+              "
+              (click)="sortByColumn(column)"
+            >
+              <span class="sort-button-text">{{ column.name }}</span>
+              <ng-container *ngIf="sortState$ | async as sortState">
+                <ng-container *ngIf="sortState.sortByColumn === column.name">
+                  <span
+                    class="sort-button-arrow"
+                    *ngIf="sortState.direction === Direction.ASCENDENT"
+                    >&uarr;</span
+                  >
+                  <span
+                    class="sort-button-arrow"
+                    *ngIf="sortState.direction === Direction.DESCENDENT"
+                    >&darr;</span
+                  >
+                </ng-container>
+              </ng-container>
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dataEntry of displayData$ | async; let idx = index">
+          <td *ngFor="let property of dataEntryProperties$ | async">
+            {{ dataEntry[property] }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <ng-container
+      *ngIf="{
+        currentPage: currentPage$ | async,
+        totalNumberOfPages: totalNumberOfPages$ | async
+      } as nativationValues"
+    >
+      <button
+        class="navigation-button"
+        [disabled]="nativationValues.currentPage === 1"
+        (click)="handlePrevPage()"
+      >
+        Prev
+      </button>
+      <span class="current-page"
+        >{{ nativationValues.currentPage }} of
+        {{ nativationValues.totalNumberOfPages }}</span
+      >
+      <button
+        class="navigation-button"
+        [disabled]="
+          nativationValues.currentPage === nativationValues.totalNumberOfPages
+        "
+        (click)="handleNextPage()"
+      >
+        Next
+      </button>
+
+      <input
+        class="items-per-page"
+        placeholder="Items per page"
+        type="number"
+        [formControl]="pageSizeFormControl"
+      />
+    </ng-container>
+  </div>
+</div>
