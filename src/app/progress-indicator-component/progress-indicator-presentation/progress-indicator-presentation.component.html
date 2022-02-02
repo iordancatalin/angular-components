@@ -1,0 +1,23 @@
+<div class="progress-indicator-wrapper">
+  <div class="inputs-wrapper">
+    <fieldset>
+      <legend>Progress</legend>
+      <input type="range" [formControl]="progressFormControl" />
+    </fieldset>
+    <fieldset>
+      <legend>Radius</legend>
+      <input type="number" [formControl]="radiusFormControl" />
+    </fieldset>
+    <fieldset>
+      <legend>Color</legend>
+      <input type="color" [formControl]="colorFormControl" />
+    </fieldset>
+  </div>
+
+  <t-progress
+    [radius]="radiusValue$ | async"
+    [progress]="progressValue$ | async"
+    [color]="colorValue$ | async"
+    (complete)="handeCompleteEvent()"
+  ></t-progress>
+</div>
