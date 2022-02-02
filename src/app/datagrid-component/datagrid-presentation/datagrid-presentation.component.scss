@@ -13,10 +13,12 @@
 
   .columns-options {
     display: flex;
+    flex-wrap: wrap;
     padding-bottom: 0.75rem;
 
-    .column-option:not(:first-of-type) {
+    .column-option {
       margin-left: 20px;
+      margin-top: 10px;
     }
   }
 

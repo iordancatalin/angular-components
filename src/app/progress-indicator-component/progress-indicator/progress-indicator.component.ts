@@ -12,6 +12,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { of } from 'rxjs';
 
 @Component({
   selector: 't-progress',
@@ -43,6 +44,7 @@ export class ProgressIndicatorComponent
   private readonly textFont = '30px Arial';
   private readonly textAlign = 'center';
   private readonly textBaseline = 'middle';
+  private readonly lineWidth = 10;
 
   ngOnInit(): void {}
 
@@ -53,7 +55,17 @@ export class ProgressIndicatorComponent
   ngAfterViewInit(): void {
     this.canvasContext = this.canvas.nativeElement.getContext('2d');
 
+    const dimension = this._radius * 2 + this.lineWidth;
+    this.setCanvasDimension(dimension, dimension);
+
     this.startAnimateProgressIndicator();
+  }
+
+  private setCanvasDimension(width: number, height: number): void {
+    if (this.canvasContext) {
+      this.canvasContext.canvas.width = width;
+      this.canvasContext.canvas.height = height;
+    }
   }
 
   private startAnimateProgressIndicator(): void {
@@ -72,8 +84,8 @@ export class ProgressIndicatorComponent
       this.canvasContext.clearRect(
         0,
         0,
-        this.canvasContext.canvas.height,
-        this.canvasContext.canvas.width
+        this.canvasContext.canvas.width,
+        this.canvasContext.canvas.height
       );
 
       this.degree++;
@@ -128,7 +140,14 @@ export class ProgressIndicatorComponent
 
   @Input()
   public set radius(radiusValue: number) {
-    this._radius = radiusValue >= 50 ? radiusValue : 50;
+    const newRadiusValue = radiusValue >= 50 ? radiusValue : 50;
+
+    if (newRadiusValue !== this._radius) {
+      this._radius = newRadiusValue;
+
+      const dimension = this._radius * 2 + this.lineWidth;
+      this.setCanvasDimension(dimension, dimension);
+    }
   }
 
   private degreesToRadians(degrees: number) {
