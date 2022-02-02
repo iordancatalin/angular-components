@@ -1,0 +1,16 @@
+.progress-indicator-wrapper {
+  padding: 2rem;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  .inputs-wrapper {
+    display: flex;
+
+    legend {
+      color: var(--white);
+    }
+  }
+}

@@ -6,6 +6,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+
+  public progress: number = 10;
+
   ngOnInit(): void {
   }
 }
