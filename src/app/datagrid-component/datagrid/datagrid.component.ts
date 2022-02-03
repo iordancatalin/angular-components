@@ -1,7 +1,5 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
+  AfterViewInit, ChangeDetectorRef,
   Component,
   ContentChildren,
   EventEmitter,
@@ -9,7 +7,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  QueryList,
+  QueryList
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import {
@@ -22,7 +20,7 @@ import {
   Observable,
   startWith,
   Subscription,
-  tap,
+  tap
 } from 'rxjs';
 import { SortService } from '../services/sort.service';
 import { ColumnComponent } from './column/column.component';
@@ -30,21 +28,24 @@ import {
   Direction,
   PaginationChangeEvent,
   SortChangeEvent,
-  SortState,
+  SortState
 } from './datagrid.model';
 
 @Component({
   selector: 't-datagrid',
   templateUrl: './datagrid.component.html',
   styleUrls: ['./datagrid.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // use default chenage detection strategy because we need to render this component when a change occures in ColumnComponent
+  // ex: if sortable value changes we need to rerender this component to allow(or not) the sort operation
 })
-export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
+export class DataGridComponent<T, K extends keyof T>
+  implements OnInit, AfterViewInit, OnDestroy
+{
   @Output() public paginationChange = new EventEmitter<PaginationChangeEvent>();
   @Output() public sortChange = new EventEmitter<SortChangeEvent>();
 
   @ContentChildren(ColumnComponent)
-  public columnComponentChildren!: QueryList<ColumnComponent<T>>;
+  public columnComponentChildren!: QueryList<ColumnComponent<K>>;
 
   public isSortable: boolean = true;
   public displayData$!: Observable<T[]>;
@@ -53,8 +54,8 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
   public currentPage$ = new BehaviorSubject<number>(1);
   public totalNumberOfPages$!: Observable<number>;
 
-  public columnConfigs$!: Observable<QueryList<ColumnComponent<T>>>;
-  public dataEntryProperties$!: Observable<(keyof T)[]>;
+  public columnConfigs$!: Observable<QueryList<ColumnComponent<K>>>;
+  public dataEntryProperties$!: Observable<K[]>;
 
   public sortState$ = new BehaviorSubject<SortState<T> | null>(null);
 
@@ -108,7 +109,7 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.dataEntryProperties$ = this.columnConfigs$.pipe(
-      map((children: QueryList<ColumnComponent<T>>) =>
+      map((children: QueryList<ColumnComponent<K>>) =>
         children.map((child) => child.property)
       )
     );
@@ -138,7 +139,7 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  public sortByColumn(column: ColumnComponent<T>): void {
+  public sortByColumn(column: ColumnComponent<K>): void {
     const newSortState = this.getUpdatedSortState(
       this.sortState$.value,
       column.name,
@@ -166,7 +167,7 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
   }
 
   @Input()
-  public set pageSize(pageSizeValue: number) {
+  public set pageSize(pageSizeValue: number | null) {
     this.pageSizeFormControl.setValue(pageSizeValue);
   }
 
@@ -177,6 +178,18 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
 
   public get Direction(): typeof Direction {
     return Direction;
+  }
+
+  public headerTracker(index: number, column: ColumnComponent<K>): string {
+    return `${column.name}-${index}`;
+  }
+
+  public dataEntryTracker(index: number): number {
+    return index;
+  }
+
+  public propertyTracker(index: number, property: K): string {
+    return `${property}-${index}`;
   }
 
   private getCurrentPageData(

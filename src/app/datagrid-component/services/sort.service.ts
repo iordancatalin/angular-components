@@ -81,18 +81,12 @@ class NumberComparator implements Comparator {
   }
 
   compare(valueOne: unknown, valueTwo: unknown, direction: Direction): number {
-    const [one, two] = this.castValues(valueOne, valueTwo);
-
-    if (direction === Direction.ASCENDENT) {
-      return one - two;
-    }
-
-    return two - one;
-  }
-
-  private castValues(valueOne: unknown, valueTwo: unknown): number[] {
     if (typeof valueOne === 'number' && typeof valueTwo === 'number') {
-      return [valueOne, valueTwo];
+      if (direction === Direction.ASCENDENT) {
+        return valueOne - valueTwo;
+      }
+
+      return valueTwo - valueOne;
     }
 
     throw new Error('Improper use of Number Comparator');
@@ -128,21 +122,15 @@ class DateComparator implements Comparator {
   }
 
   compare(valueOne: unknown, valueTwo: unknown, direction: Direction): number {
-    const [one, two] = this.castValues(valueOne, valueTwo);
-
-    const valueOneTime = one.getTime();
-    const valueTwoTime = two.getTime();
-
-    if (direction === Direction.ASCENDENT) {
-      return valueOneTime - valueTwoTime;
-    }
-
-    return valueTwoTime - valueOneTime;
-  }
-
-  private castValues(valueOne: unknown, valueTwo: unknown): Date[] {
     if (valueOne instanceof Date && valueTwo instanceof Date) {
-      return [valueOne, valueTwo];
+      const valueOneTime = valueOne.getTime();
+      const valueTwoTime = valueTwo.getTime();
+
+      if (direction === Direction.ASCENDENT) {
+        return valueOneTime - valueTwoTime;
+      }
+
+      return valueTwoTime - valueOneTime;
     }
 
     throw new Error('Improper use of Date Comparator');

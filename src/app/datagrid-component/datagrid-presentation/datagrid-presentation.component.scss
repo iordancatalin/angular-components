@@ -1,5 +1,11 @@
+@use "breakpoints";
+
 .presentation-wrapper {
-  padding: 2rem;
+  padding: 0.5rem;
+
+  @include breakpoints.breakpoint-up(md) {
+    padding: 2rem;
+  }
 
   .example-title {
     padding-bottom: 1rem;

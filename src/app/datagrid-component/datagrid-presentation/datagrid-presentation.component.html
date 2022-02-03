@@ -35,7 +35,13 @@
     </div>
   </div>
 
-  <t-datagrid [data]="myData" [sortable]="true" [pageSize]="5">
+  <t-datagrid
+    [data]="myData"
+    [sortable]="true"
+    [pageSize]="pageSize"
+    (sortChange)="handleSortChange($event)"
+    (paginationChange)="handlePaginationChange($event)"
+  >
     <t-column
       *ngFor="let column of visibleColumns"
       [name]="column.name"

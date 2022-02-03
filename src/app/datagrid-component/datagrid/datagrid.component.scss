@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .datagrid-table {
   width: 100%;
   border-collapse: collapse;
@@ -53,6 +55,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 
   padding: 0.5rem;
 
@@ -82,9 +85,7 @@
   }
 
   .items-per-page {
-    position: absolute;
-    right: 10px;
-    padding: 5px;
+    margin-top: 10px;
     border: 0;
     background-color: transparent;
     color: var(--white);
@@ -93,6 +94,17 @@
 
     &:focus {
       outline-color: var(--dark-pink);
+    }
+  }
+
+  @include breakpoints.breakpoint-up(md) {
+    flex-direction: row;
+
+    .items-per-page {
+      position: absolute;
+      margin-top: 0;
+      right: 10px;
+      padding: 5px;
     }
   }
 }

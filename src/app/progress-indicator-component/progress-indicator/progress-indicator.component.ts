@@ -4,7 +4,6 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  HostListener,
   Input,
   OnChanges,
   OnInit,
@@ -12,7 +11,6 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { of } from 'rxjs';
 
 @Component({
   selector: 't-progress',
@@ -75,11 +73,18 @@ export class ProgressIndicatorComponent
       this.degree = 0;
       this.currentProgress = Math.floor((this.degree * 100) / 360);
 
-      window.requestAnimationFrame(this.drowCircle.bind(this));
+      this.canvasContext.strokeStyle = this.color;
+      this.canvasContext.lineWidth = 10;
+      this.canvasContext.fillStyle = this.textColor;
+      this.canvasContext.font = this.textFont;
+      this.canvasContext.textAlign = this.textAlign;
+      this.canvasContext.textBaseline = this.textBaseline;
+
+      window.requestAnimationFrame(this.animateCircle.bind(this));
     }
   }
 
-  private drowCircle(): void {
+  private animateCircle(): void {
     if (this.canvasContext != null) {
       this.canvasContext.clearRect(
         0,
@@ -93,7 +98,7 @@ export class ProgressIndicatorComponent
       this.currentProgress = Math.floor((this.degree * 100) / 360);
 
       this.canvasContext.beginPath();
-      this.canvasContext.strokeStyle = this.color;
+      // this.canvasContext.strokeStyle = this.color;
       this.canvasContext.arc(
         this.canvasContext.canvas.width / 2,
         this.canvasContext.canvas.height / 2,
@@ -101,13 +106,13 @@ export class ProgressIndicatorComponent
         this.degreesToRadians(0) - Math.PI / 2,
         this.degreesToRadians(this.degree) - Math.PI / 2
       );
-      this.canvasContext.lineWidth = 10;
+      // this.canvasContext.lineWidth = 10;
       this.canvasContext.stroke();
 
-      this.canvasContext.fillStyle = this.textColor;
-      this.canvasContext.font = this.textFont;
-      this.canvasContext.textAlign = this.textAlign;
-      this.canvasContext.textBaseline = this.textBaseline;
+      // this.canvasContext.fillStyle = this.textColor;
+      // this.canvasContext.font = this.textFont;
+      // this.canvasContext.textAlign = this.textAlign;
+      // this.canvasContext.textBaseline = this.textBaseline;
 
       this.canvasContext.fillText(
         `${this.currentProgress}%`,
@@ -116,7 +121,7 @@ export class ProgressIndicatorComponent
       );
 
       if (this.currentProgress < this._progress) {
-        window.requestAnimationFrame(this.drowCircle.bind(this));
+        window.requestAnimationFrame(this.animateCircle.bind(this));
       } else {
         this.complete.emit();
       }
@@ -126,7 +131,7 @@ export class ProgressIndicatorComponent
   @Input()
   public set progress(progressValue: number) {
     if (progressValue < 0) {
-      this._progress = progressValue;
+      this._progress = 0;
       return;
     }
 
@@ -148,6 +153,14 @@ export class ProgressIndicatorComponent
       const dimension = this._radius * 2 + this.lineWidth;
       this.setCanvasDimension(dimension, dimension);
     }
+  }
+
+  public get radius(): number {
+    return this._radius;
+  }
+
+  public get progress(): number {
+    return this._progress;
   }
 
   private degreesToRadians(degrees: number) {

@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ColumnConfiguration } from '../datagrid/column/column.model';
+import {
+  PaginationChangeEvent,
+  SortChangeEvent,
+} from '../datagrid/datagrid.model';
 import { DatasourceService } from '../services/datasource.service';
 import { CarModel } from '../services/datasourceCars';
 
@@ -17,6 +21,7 @@ export class DataGridPresentationComponent implements OnInit {
 
   public columns!: ColumnConfiguration<CarModel>[];
   public checkableColumns: CheckableColum[] = [];
+  public pageSize: number | null = 5;
 
   constructor(private datasourceService: DatasourceService) {}
 
@@ -34,5 +39,18 @@ export class DataGridPresentationComponent implements OnInit {
 
   public get visibleColumns(): ColumnConfiguration<CarModel>[] {
     return this.checkableColumns.filter((column) => column.checked === true);
+  }
+
+  public handleSortChange(sortChangeEvent: SortChangeEvent): void {
+    console.log('Sort change event emitted with payload', sortChangeEvent);
+  }
+
+  public handlePaginationChange(
+    paginationChangeEvent: PaginationChangeEvent
+  ): void {
+    console.log(
+      'Pagination change event emitted with payload',
+      paginationChangeEvent
+    );
   }
 }

@@ -6,7 +6,7 @@ describe('DatasourceService', () => {
   let service: DatasourceService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({ providers: [DatasourceService] });
     service = TestBed.inject(DatasourceService);
   });
 

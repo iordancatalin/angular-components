@@ -7,13 +7,18 @@
     <table class="datagrid-table">
       <thead>
         <tr>
-          <th *ngFor="let column of columnConfigs$ | async" scope="col">
+          <th
+            *ngFor="
+              let column of columnConfigs$ | async;
+              trackBy: headerTracker
+            "
+            scope="col"
+            data-testid="head-cell"
+          >
             <button
+              data-testid="sort-button"
               class="sort-button"
-              [disabled]="
-                isSortable === false ||
-                (column.sortableObservable | async) === false
-              "
+              [disabled]="isSortable === false || column.sortable === false"
               (click)="sortByColumn(column)"
             >
               <span class="sort-button-text">{{ column.name }}</span>
@@ -36,8 +41,21 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let dataEntry of displayData$ | async; let idx = index">
-          <td *ngFor="let property of dataEntryProperties$ | async">
+        <tr
+          data-testid="table-row"
+          *ngFor="
+            let dataEntry of displayData$ | async;
+            let idx = index;
+            trackBy: dataEntryTracker
+          "
+        >
+          <td
+            *ngFor="
+              let property of dataEntryProperties$ | async;
+              trackBy: propertyTracker
+            "
+            data-testid="table-cell"
+          >
             {{ dataEntry[property] }}
           </td>
         </tr>
@@ -52,28 +70,38 @@
         totalNumberOfPages: totalNumberOfPages$ | async
       } as nativationValues"
     >
-      <button
-        class="navigation-button"
-        [disabled]="nativationValues.currentPage === 1"
-        (click)="handlePrevPage()"
-      >
-        Prev
-      </button>
-      <span class="current-page"
-        >{{ nativationValues.currentPage }} of
-        {{ nativationValues.totalNumberOfPages }}</span
-      >
-      <button
-        class="navigation-button"
-        [disabled]="
-          nativationValues.currentPage === nativationValues.totalNumberOfPages
-        "
-        (click)="handleNextPage()"
-      >
-        Next
-      </button>
+      <div>
+        <button
+          data-testid="prev-button"
+          class="navigation-button"
+          [disabled]="nativationValues.currentPage === 1"
+          (click)="handlePrevPage()"
+        >
+          Prev
+        </button>
+        <span class="current-page">
+          <span data-testid="current-page-number">
+            {{ nativationValues.currentPage }}
+          </span>
+          <span>of</span>
+          <span data-testid="total-pages-number">{{
+            nativationValues.totalNumberOfPages
+          }}</span>
+        </span>
+        <button
+          data-testid="next-button"
+          class="navigation-button"
+          [disabled]="
+            nativationValues.currentPage === nativationValues.totalNumberOfPages
+          "
+          (click)="handleNextPage()"
+        >
+          Next
+        </button>
+      </div>
 
       <input
+        data-testid="page-size-input"
         class="items-per-page"
         placeholder="Items per page"
         type="number"

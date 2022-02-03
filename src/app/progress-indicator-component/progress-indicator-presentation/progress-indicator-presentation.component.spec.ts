@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ProgressIndicatorComponent } from '../progress-indicator/progress-indicator.component';
 
 import { ProgressIndicatorPresentationComponent } from './progress-indicator-presentation.component';
 
@@ -8,7 +10,8 @@ describe('ProgressIndicatorPresentationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProgressIndicatorPresentationComponent ]
+      imports: [ReactiveFormsModule],
+      declarations: [ ProgressIndicatorPresentationComponent, ProgressIndicatorComponent ]
     })
     .compileComponents();
   });
