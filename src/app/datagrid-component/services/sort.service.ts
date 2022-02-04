@@ -3,15 +3,11 @@ import { Direction } from '../datagrid/datagrid.model';
 
 @Injectable()
 export class SortService {
-  private comparators: Comparator[];
+  private comparators: (NumberComparator | DateComparator)[];
+  private defaultComparator = new DefaultComparator();
 
   constructor() {
-    this.comparators = [
-      new NumberComparator(),
-      new DateComparator(),
-      // Keep string comparator last as the default comparator
-      new StringComparator(),
-    ];
+    this.comparators = [new NumberComparator(), new DateComparator()];
   }
 
   public sortByProperty<T, K extends keyof T>(
@@ -21,16 +17,30 @@ export class SortService {
   ): T[] {
     const dataArrayClone = data != null ? [...data] : [];
 
-    return dataArrayClone.sort((firtTerm, secondTerm) => {
-      const firstTermProperty = firtTerm[property];
-      const secondTermProperty = secondTerm[property];
+    const nonNullValue = dataArrayClone.find(
+      (value) => value[property] != null
+    )?.[property];
 
-      return this.compareValues(
-        firstTermProperty,
-        secondTermProperty,
-        direction
-      );
-    });
+    // didn't find a value that is not null for the provided property, return array without sorting
+    if (nonNullValue == null) {
+      return dataArrayClone;
+    }
+
+    // find comparator based on type of the found value
+    // asume that data is consitent
+    const comparator =
+      this.comparators.find((comparator) =>
+        comparator.isApplicable(nonNullValue)
+      ) ?? this.defaultComparator;
+
+    return dataArrayClone.sort((firtTerm, secondTerm) =>
+      this.compareValues(
+        firtTerm[property],
+        secondTerm[property],
+        direction,
+        comparator
+      )
+    );
   }
 
   /**
@@ -46,7 +56,8 @@ export class SortService {
   private compareValues(
     valueOne: unknown,
     valueTwo: unknown,
-    direction: Direction
+    direction: Direction,
+    comparator: NumberComparator | DateComparator | DefaultComparator
   ): number {
     if (valueOne == null && valueTwo == null) {
       return 0;
@@ -60,24 +71,22 @@ export class SortService {
       return -1;
     }
 
-    const comparator = this.comparators.find((comparator) =>
-      comparator.isApplicable(valueOne, valueTwo)
-    );
+    try {
+      return comparator.compare(valueOne, valueTwo, direction);
+    } catch (err) {
+      // if the comparator.compare throws an error then we have inconsitend data
+      console.error(
+        `Inconsistent data, can't compare type ${typeof valueOne} with type ${typeof valueTwo}`
+      );
+    }
 
-    return comparator != null
-      ? comparator.compare(valueOne, valueTwo, direction)
-      : 0;
+    return 0;
   }
 }
 
-interface Comparator {
-  isApplicable(valueOne: unknown, valueTwo: unknown): boolean;
-  compare(valueOne: unknown, valueTwo: unknown, direction: Direction): number;
-}
-
-class NumberComparator implements Comparator {
-  isApplicable(valueOne: unknown, valueTwo: unknown): boolean {
-    return typeof valueOne === 'number' && typeof valueTwo === 'number';
+class NumberComparator {
+  isApplicable(value: unknown): boolean {
+    return typeof value === 'number';
   }
 
   compare(valueOne: unknown, valueTwo: unknown, direction: Direction): number {
@@ -93,32 +102,26 @@ class NumberComparator implements Comparator {
   }
 }
 
-class StringComparator implements Comparator {
+class DefaultComparator {
   isApplicable(): boolean {
     return true;
   }
 
-  compare(valueOne: unknown, valueTwo: unknown, direction: Direction): number {
-    const [one, two] = this.castValues(valueOne, valueTwo);
+  compare(valueOne: any, valueTwo: any, direction: Direction): number {
+    const stringValueOne = valueOne.toString().toUpperCase();
+    const stringValueTwo = valueTwo.toString().toUpperCase();
 
     if (direction === Direction.ASCENDENT) {
-      return one.localeCompare(two);
+      return stringValueOne.localeCompare(stringValueTwo);
     }
 
-    return two.localeCompare(one);
-  }
-
-  private castValues(valueOne: unknown, valueTwo: unknown): string[] {
-    const valueOneString = valueOne + '';
-    const valueTwoString = valueTwo + '';
-
-    return [valueOneString, valueTwoString];
+    return stringValueTwo.localeCompare(stringValueOne);
   }
 }
 
-class DateComparator implements Comparator {
-  isApplicable(valueOne: unknown, valueTwo: unknown): boolean {
-    return valueOne instanceof Date && valueTwo instanceof Date;
+class DateComparator {
+  isApplicable(value: unknown): boolean {
+    return value instanceof Date;
   }
 
   compare(valueOne: unknown, valueTwo: unknown, direction: Direction): number {
