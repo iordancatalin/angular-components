@@ -38,6 +38,8 @@ export class ProgressIndicatorComponent
   private canvasContext!: CanvasRenderingContext2D | null;
   private degree = 0;
 
+  private animationRef!: number;
+
   private readonly textColor = '#fff';
   private readonly textFont = '30px Arial';
   private readonly textAlign = 'center';
@@ -47,6 +49,10 @@ export class ProgressIndicatorComponent
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
+    if(this.animationRef) {
+      window.cancelAnimationFrame(this.animationRef);
+    }
+
     this.startAnimateProgressIndicator();
   }
 
@@ -80,7 +86,9 @@ export class ProgressIndicatorComponent
       this.canvasContext.textAlign = this.textAlign;
       this.canvasContext.textBaseline = this.textBaseline;
 
-      window.requestAnimationFrame(this.animateCircle.bind(this));
+      this.animationRef = window.requestAnimationFrame(
+        this.animateCircle.bind(this)
+      );
     }
   }
 
@@ -98,7 +106,7 @@ export class ProgressIndicatorComponent
       this.currentProgress = Math.floor((this.degree * 100) / 360);
 
       this.canvasContext.beginPath();
-      // this.canvasContext.strokeStyle = this.color;
+
       this.canvasContext.arc(
         this.canvasContext.canvas.width / 2,
         this.canvasContext.canvas.height / 2,
@@ -106,13 +114,8 @@ export class ProgressIndicatorComponent
         this.degreesToRadians(0) - Math.PI / 2,
         this.degreesToRadians(this.degree) - Math.PI / 2
       );
-      // this.canvasContext.lineWidth = 10;
-      this.canvasContext.stroke();
 
-      // this.canvasContext.fillStyle = this.textColor;
-      // this.canvasContext.font = this.textFont;
-      // this.canvasContext.textAlign = this.textAlign;
-      // this.canvasContext.textBaseline = this.textBaseline;
+      this.canvasContext.stroke();
 
       this.canvasContext.fillText(
         `${this.currentProgress}%`,
@@ -121,7 +124,9 @@ export class ProgressIndicatorComponent
       );
 
       if (this.currentProgress < this._progress) {
-        window.requestAnimationFrame(this.animateCircle.bind(this));
+        this.animationRef = window.requestAnimationFrame(
+          this.animateCircle.bind(this)
+        );
       } else {
         this.complete.emit();
       }
