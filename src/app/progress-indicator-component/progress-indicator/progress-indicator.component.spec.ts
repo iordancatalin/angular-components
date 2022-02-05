@@ -1,14 +1,12 @@
 import { Component, DebugElement } from '@angular/core';
 import {
   ComponentFixture,
-  fakeAsync,
-  flush,
-  TestBed,
-  tick,
+  fakeAsync, TestBed,
+  tick
 } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-
 import { ProgressIndicatorComponent } from './progress-indicator.component';
+
 
 describe('ProgressIndicatorComponent in isolation', () => {
   let component: ProgressIndicatorComponent;
@@ -145,7 +143,7 @@ describe('ProgressIndicatorComponent within host component', () => {
     spyOn(progressIndicatorComponent.complete, 'emit').and.callThrough();
 
     // keep this value to 0, if you want to increas this value also increas tick value
-    // to allow the window.requestAnimationFrame to run and finish the
+    // to allow the window.requestAnimationFrame to run and finish the animation
     hostComponent.progress = 0;
     fixtureHostComponent.detectChanges();
 

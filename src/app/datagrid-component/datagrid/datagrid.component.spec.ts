@@ -2,8 +2,6 @@ import { Component, DebugElement } from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
-  flush,
-  flushMicrotasks,
   TestBed,
   tick,
 } from '@angular/core/testing';
@@ -19,13 +17,10 @@ import {
 } from './datagrid.model';
 
 type TestDataModel = { id: number; name: string };
-type TestDataModelKey = keyof TestDataModel;
 
 describe('DataGridComponent insolated', () => {
-  let component: DataGridComponent<TestDataModel, TestDataModelKey>;
-  let fixture: ComponentFixture<
-    DataGridComponent<TestDataModel, TestDataModelKey>
-  >;
+  let component: DataGridComponent<TestDataModel>;
+  let fixture: ComponentFixture<DataGridComponent<TestDataModel>>;
   let sortServiceSpy: jasmine.SpyObj<SortService>;
 
   beforeEach(async () => {
@@ -45,9 +40,9 @@ describe('DataGridComponent insolated', () => {
 
   beforeEach(() => {
     fixture =
-      TestBed.createComponent<
-        DataGridComponent<TestDataModel, TestDataModelKey>
-      >(DataGridComponent);
+      TestBed.createComponent<DataGridComponent<TestDataModel>>(
+        DataGridComponent
+      );
 
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -263,13 +258,15 @@ describe('DatagridComponent within host component', () => {
     firstColumnSortButton.triggerEventHandler('click', null);
     fixtureHostComponent.detectChanges();
 
-    const firstColumnNodeList =
-      fixtureHostComponent.nativeElement.querySelectorAll(
-        '[data-testid=table-row] td:is(:first-of-type)'
-      );
-    const firstColumnValuesAscendent = [...firstColumnNodeList].map((node) =>
-      parseInt(node.textContent)
+    const cols = fixtureHostComponent.nativeElement.querySelectorAll(
+      '[data-testid=table-row] td:is(:first-of-type)'
     );
+
+    const firstColumnValuesAscendent = [
+      ...fixtureHostComponent.nativeElement.querySelectorAll(
+        '[data-testid=table-row] td:is(:first-of-type)'
+      ),
+    ].map((node) => parseInt(node.textContent));
 
     // expect displayed rows to be sorted ascendent by id
     expect(firstColumnValuesAscendent).toEqual([1, 2, 3, 4, 5]);
@@ -278,21 +275,21 @@ describe('DatagridComponent within host component', () => {
     firstColumnSortButton.triggerEventHandler('click', null);
     fixtureHostComponent.detectChanges();
 
-    const firstColumnValuesDescendent = [...firstColumnNodeList].map((node) =>
-      parseInt(node.textContent)
-    );
+    const firstColumnValuesDescendent = [
+      ...fixtureHostComponent.nativeElement.querySelectorAll(
+        '[data-testid=table-row] td:is(:first-of-type)'
+      ),
+    ].map((node) => parseInt(node.textContent));
 
     // expect displayed rows to be sorted descendent by id
     expect(firstColumnValuesDescendent).toEqual([8, 7, 6, 5, 4]);
   });
 
   it('should emit event on pagination change', () => {
-    const datagridComponentInstance: DataGridComponent<
-      TestDataModel,
-      TestDataModelKey
-    > = fixtureHostComponent.debugElement.query(
-      By.directive(DataGridComponent)
-    ).componentInstance;
+    const datagridComponentInstance: DataGridComponent<TestDataModel> =
+      fixtureHostComponent.debugElement.query(
+        By.directive(DataGridComponent)
+      ).componentInstance;
 
     spyOn(datagridComponentInstance.paginationChange, 'emit').and.callThrough();
     spyOn(
@@ -319,12 +316,10 @@ describe('DatagridComponent within host component', () => {
   });
 
   it('should emit event on sort change', () => {
-    const datagridComponentInstance: DataGridComponent<
-      TestDataModel,
-      TestDataModelKey
-    > = fixtureHostComponent.debugElement.query(
-      By.directive(DataGridComponent)
-    ).componentInstance;
+    const datagridComponentInstance: DataGridComponent<TestDataModel> =
+      fixtureHostComponent.debugElement.query(
+        By.directive(DataGridComponent)
+      ).componentInstance;
 
     spyOn(datagridComponentInstance.sortChange, 'emit').and.callThrough();
     const handleSortChangeSpy = spyOn(
@@ -345,11 +340,9 @@ describe('DatagridComponent within host component', () => {
       fixtureHostComponent.componentInstance.handleSortChange
     ).toHaveBeenCalledTimes(2);
 
-    expect(handleSortChangeSpy.calls.allArgs()[0]).toEqual([
-      { columnName: 'Id', direction: Direction.ASCENDENT },
-    ]);
-    expect(handleSortChangeSpy.calls.allArgs()[1]).toEqual([
-      { columnName: 'Id', direction: Direction.DESCENDENT },
+    expect(handleSortChangeSpy.calls.allArgs()).toEqual([
+      [{ columnName: 'Id', direction: Direction.ASCENDENT }],
+      [{ columnName: 'Id', direction: Direction.DESCENDENT }],
     ]);
   });
 });

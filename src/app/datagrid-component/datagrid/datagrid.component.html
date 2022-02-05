@@ -43,17 +43,11 @@
       <tbody>
         <tr
           data-testid="table-row"
-          *ngFor="
-            let dataEntry of displayData$ | async;
-            let idx = index;
-            trackBy: dataEntryTracker
-          "
+          *ngFor="let dataEntry of displayData$ | async;
+          trackBy: dataEntryTracker"
         >
           <td
-            *ngFor="
-              let property of dataEntryProperties$ | async;
-              trackBy: propertyTracker
-            "
+            *ngFor="let property of dataEntryProperties$ | async"
             data-testid="table-cell"
           >
             {{ dataEntry[property] }}
@@ -79,12 +73,12 @@
         >
           Prev
         </button>
-        <span class="current-page">
-          <span data-testid="current-page-number">
+        <span class="footer-page-info">
+          <span data-testid="current-page-number" class="current-page">
             {{ nativationValues.currentPage }}
           </span>
-          <span>of</span>
-          <span data-testid="total-pages-number">{{
+          <span> of </span>
+          <span data-testid="total-pages-number" class="total-pages-number">{{
             nativationValues.totalNumberOfPages
           }}</span>
         </span>

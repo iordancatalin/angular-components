@@ -12,9 +12,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
   styleUrls: ['./column.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColumnComponent<K> implements OnInit {
+export class ColumnComponent<T> implements OnInit {
   @Input() public name: string = '';
-  @Input() public property!: K;
+  @Input() public property!: keyof T;
   @Input() public sortable: boolean = true;
 
   constructor() {}

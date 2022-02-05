@@ -62,9 +62,17 @@
   border: 1px solid var(--gray);
   border-top: 0;
 
-  .current-page {
+  .footer-page-info {
     padding: 0 1.5rem;
     color: var(--white);
+
+    .current-page {
+      margin-right: 5px;
+    }
+
+    .total-pages-number {
+      margin-left: 5px;
+    }
   }
 
   .navigation-button {

@@ -2,11 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ColumnComponent } from './column.component';
 
 type TestDataModel = { firstName: string };
-type TestDataModelKey = keyof TestDataModel;
 
 describe('ColumnComponent', () => {
-  let component: ColumnComponent<TestDataModelKey>;
-  let fixture: ComponentFixture<ColumnComponent<TestDataModelKey>>;
+  let component: ColumnComponent<TestDataModel>;
+  let fixture: ComponentFixture<ColumnComponent<TestDataModel>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -16,7 +15,7 @@ describe('ColumnComponent', () => {
 
   beforeEach(() => {
     fixture =
-      TestBed.createComponent<ColumnComponent<TestDataModelKey>>(
+      TestBed.createComponent<ColumnComponent<TestDataModel>>(
         ColumnComponent
       );
     component = fixture.componentInstance;

@@ -9,8 +9,6 @@ type TestDataModel = {
   date: Date;
 };
 
-type TestDataModelKey = keyof TestDataModel;
-
 const unsortedData: TestDataModel[] = [
   { id: 3, name: 'Billy', date: new Date(2022, 2, 3) },
   { id: 1, name: 'Anna', date: new Date(2022, 2, 2) },
@@ -60,7 +58,7 @@ describe('SortService', () => {
   });
 
   it('should sort data ascendent by id', () => {
-    const actualData = service.sortByProperty<TestDataModel, TestDataModelKey>(
+    const actualData = service.sortByProperty<TestDataModel>(
       unsortedData,
       'id',
       Direction.ASCENDENT
@@ -70,7 +68,7 @@ describe('SortService', () => {
   });
 
   it('should sort data descendent by id', () => {
-    const actualData = service.sortByProperty<TestDataModel, TestDataModelKey>(
+    const actualData = service.sortByProperty<TestDataModel>(
       unsortedData,
       'id',
       Direction.DESCENDENT
@@ -80,7 +78,7 @@ describe('SortService', () => {
   });
 
   it('should sort data ascendent by name', () => {
-    const actualData = service.sortByProperty<TestDataModel, TestDataModelKey>(
+    const actualData = service.sortByProperty<TestDataModel>(
       unsortedData,
       'name',
       Direction.ASCENDENT
@@ -90,7 +88,7 @@ describe('SortService', () => {
   });
 
   it('should sort data descendent by name', () => {
-    const actualData = service.sortByProperty<TestDataModel, TestDataModelKey>(
+    const actualData = service.sortByProperty<TestDataModel>(
       unsortedData,
       'name',
       Direction.DESCENDENT
@@ -100,7 +98,7 @@ describe('SortService', () => {
   });
 
   it('should sort data ascendent by date', () => {
-    const actualData = service.sortByProperty<TestDataModel, TestDataModelKey>(
+    const actualData = service.sortByProperty<TestDataModel>(
       unsortedData,
       'date',
       Direction.ASCENDENT
@@ -110,7 +108,7 @@ describe('SortService', () => {
   });
 
   it('should sort data descendent by date', () => {
-    const actualData = service.sortByProperty<TestDataModel, TestDataModelKey>(
+    const actualData = service.sortByProperty<TestDataModel>(
       unsortedData,
       'date',
       Direction.DESCENDENT

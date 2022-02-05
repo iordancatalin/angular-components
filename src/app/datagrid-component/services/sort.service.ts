@@ -1,36 +1,39 @@
 import { Injectable } from '@angular/core';
 import { Direction } from '../datagrid/datagrid.model';
 
+type AllComparatorsWithoutDefault = NumberComparator | DateComparator;
+type AllComparators = AllComparatorsWithoutDefault | DefaultComparator;
+
 @Injectable()
 export class SortService {
-  private comparators: (NumberComparator | DateComparator)[];
-  private defaultComparator = new DefaultComparator();
+  private comparators: AllComparatorsWithoutDefault[];
+  private defaultComparator: DefaultComparator = new DefaultComparator();
 
   constructor() {
     this.comparators = [new NumberComparator(), new DateComparator()];
   }
 
-  public sortByProperty<T, K extends keyof T>(
+  public sortByProperty<T>(
     data: T[],
-    property: K,
+    property: keyof T,
     direction: Direction
   ): T[] {
     const dataArrayClone = data != null ? [...data] : [];
 
-    const nonNullValue = dataArrayClone.find(
+    const foundValue = dataArrayClone.find(
       (value) => value[property] != null
     )?.[property];
 
     // didn't find a value that is not null for the provided property, return array without sorting
-    if (nonNullValue == null) {
+    if (foundValue == null) {
       return dataArrayClone;
     }
 
-    // find comparator based on type of the found value
-    // asume that data is consitent
+    // find comparator based on type of the founded value
+    // asume that data is consistent
     const comparator =
       this.comparators.find((comparator) =>
-        comparator.isApplicable(nonNullValue)
+        comparator.isApplicable(foundValue)
       ) ?? this.defaultComparator;
 
     return dataArrayClone.sort((firtTerm, secondTerm) =>
@@ -57,7 +60,7 @@ export class SortService {
     valueOne: unknown,
     valueTwo: unknown,
     direction: Direction,
-    comparator: NumberComparator | DateComparator | DefaultComparator
+    comparator: AllComparators
   ): number {
     if (valueOne == null && valueTwo == null) {
       return 0;
