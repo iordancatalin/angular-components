@@ -15,36 +15,50 @@
             scope="col"
             data-testid="head-cell"
           >
-            <button
-              data-testid="sort-button"
-              class="sort-button"
-              [disabled]="isSortable === false || column.sortable === false"
-              (click)="sortByColumn(column)"
+            <ng-container
+              *ngIf="{
+                name: column.nameObservable | async,
+                property: column.propertyObservable | async,
+                sortable: column.sortableObservable | async
+              } as columnData"
             >
-              <span class="sort-button-text">{{ column.name }}</span>
-              <ng-container *ngIf="sortState$ | async as sortState">
-                <ng-container *ngIf="sortState.sortByColumn === column.name">
-                  <span
-                    class="sort-button-arrow"
-                    *ngIf="sortState.direction === Direction.ASCENDENT"
-                    >&uarr;</span
+              <button
+                data-testid="sort-button"
+                class="sort-button"
+                [disabled]="
+                  isSortable === false || columnData.sortable === false
+                "
+                (click)="sortByColumn(columnData.name, columnData.property)"
+              >
+                <span class="sort-button-text">{{ columnData.name }}</span>
+                <ng-container *ngIf="sortState$ | async as sortState">
+                  <ng-container
+                    *ngIf="sortState.sortByColumn === columnData.name"
                   >
-                  <span
-                    class="sort-button-arrow"
-                    *ngIf="sortState.direction === Direction.DESCENDENT"
-                    >&darr;</span
-                  >
+                    <span
+                      class="sort-button-arrow"
+                      *ngIf="sortState.direction === Direction.ASCENDENT"
+                      >&uarr;</span
+                    >
+                    <span
+                      class="sort-button-arrow"
+                      *ngIf="sortState.direction === Direction.DESCENDENT"
+                      >&darr;</span
+                    >
+                  </ng-container>
                 </ng-container>
-              </ng-container>
-            </button>
+              </button>
+            </ng-container>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr
           data-testid="table-row"
-          *ngFor="let dataEntry of displayData$ | async;
-          trackBy: dataEntryTracker"
+          *ngFor="
+            let dataEntry of displayData$ | async;
+            trackBy: dataEntryTracker
+          "
         >
           <td
             *ngFor="let property of dataEntryProperties$ | async"

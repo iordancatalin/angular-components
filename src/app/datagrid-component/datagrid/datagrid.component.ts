@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ContentChildren,
@@ -21,6 +22,7 @@ import {
   Observable,
   startWith,
   Subscription,
+  switchMap,
   tap,
 } from 'rxjs';
 import { SortService } from '../services/sort.service';
@@ -36,10 +38,7 @@ import {
   selector: 't-datagrid',
   templateUrl: './datagrid.component.html',
   styleUrls: ['./datagrid.component.scss'],
-  // use default chenage detection strategy because we need to render this component when a change occures in ColumnComponent
-  // ex: if sortable value changes we need to rerender this component to allow(or not) the sort operation
-
-  // NOTE: you can find an implementation that uses ChangeDetectionStrategy.OnPush on branch feature/datagrid-onpush
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
   @Output() public paginationChange = new EventEmitter<PaginationChangeEvent>();
@@ -83,7 +82,7 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([data, currentPage, pageSize, sortState]) =>
         this.getCurrentPageData(data, currentPage, pageSize, sortState)
-      ),
+      )
       // tap(console.log)
     );
 
@@ -111,8 +110,8 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
     );
 
     this.dataEntryProperties$ = this.columnConfigs$.pipe(
-      map((children: QueryList<ColumnComponent<T>>) =>
-        children.map((child) => child.property)
+      switchMap((children: QueryList<ColumnComponent<T>>) =>
+        combineLatest(children.map((child) => child.propertyObservable))
       )
     );
 
@@ -141,17 +140,21 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  public sortByColumn(column: ColumnComponent<T>): void {
+  public sortByColumn(name: string | null, property: keyof T | null): void {
+    if (name == null || property == null) {
+      return;
+    }
+
     const newSortState = this.getUpdatedSortState(
       this.sortState$.value,
-      column.name,
-      column.property
+      name,
+      property
     );
 
     this.sortState$.next(newSortState);
 
     this.sortChange.emit({
-      columnName: column.name,
+      columnName: name,
       direction: newSortState.direction,
     });
   }
