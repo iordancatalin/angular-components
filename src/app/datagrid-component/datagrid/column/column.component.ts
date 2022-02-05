@@ -2,9 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   Input,
-  OnInit,
+  OnInit
 } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 't-column',

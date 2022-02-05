@@ -39,7 +39,7 @@ import {
   // use default chenage detection strategy because we need to render this component when a change occures in ColumnComponent
   // ex: if sortable value changes we need to rerender this component to allow(or not) the sort operation
 
-  // NOTE: you can find an implementation that uses ChangeDetectionStrategy.OnPush on branch feature/datagrid-onpush
+  // NOTE: you can find an implementation that uses ChangeDetectionStrategy.OnPush on branch feature/datagrid-onpush-strategy
 })
 export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
   @Output() public paginationChange = new EventEmitter<PaginationChangeEvent>();
