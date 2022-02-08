@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   Input,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { BehaviorSubject, filter, Observable } from 'rxjs';
 import { isNonNullable } from 'src/util/util';
