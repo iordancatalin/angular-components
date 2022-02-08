@@ -1,14 +1,12 @@
 import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
+  AfterContentInit, Component,
   ContentChildren,
   EventEmitter,
   Input,
   OnDestroy,
   OnInit,
   Output,
-  QueryList,
+  QueryList
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import {
@@ -21,7 +19,7 @@ import {
   Observable,
   startWith,
   Subscription,
-  tap,
+  tap
 } from 'rxjs';
 import { SortService } from '../services/sort.service';
 import { ColumnComponent } from './column/column.component';
@@ -29,7 +27,7 @@ import {
   Direction,
   PaginationChangeEvent,
   SortChangeEvent,
-  SortState,
+  SortState
 } from './datagrid.model';
 
 @Component({
@@ -41,7 +39,9 @@ import {
 
   // NOTE: you can find an implementation that uses ChangeDetectionStrategy.OnPush on branch feature/datagrid-onpush-strategy
 })
-export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
+export class DataGridComponent<T>
+  implements OnInit, AfterContentInit, OnDestroy
+{
   @Output() public paginationChange = new EventEmitter<PaginationChangeEvent>();
   @Output() public sortChange = new EventEmitter<SortChangeEvent>();
 
@@ -63,10 +63,7 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
   private data$ = new BehaviorSubject<T[]>([]);
   private subsription!: Subscription;
 
-  constructor(
-    private cdRef: ChangeDetectorRef,
-    private sortService: SortService
-  ) {}
+  constructor(private sortService: SortService) {}
 
   ngOnInit(): void {
     const pageSize$ = this.pageSizeFormControl.valueChanges.pipe(
@@ -83,8 +80,7 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([data, currentPage, pageSize, sortState]) =>
         this.getCurrentPageData(data, currentPage, pageSize, sortState)
-      ),
-      // tap(console.log)
+      )
     );
 
     this.totalNumberOfPages$ = combineLatest([this.data$, pageSize$]).pipe(
@@ -105,7 +101,7 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  ngAfterViewInit(): void {
+  ngAfterContentInit(): void {
     this.columnConfigs$ = this.columnComponentChildren.changes.pipe(
       startWith(this.columnComponentChildren)
     );
@@ -115,8 +111,6 @@ export class DataGridComponent<T> implements OnInit, AfterViewInit, OnDestroy {
         children.map((child) => child.property)
       )
     );
-
-    this.cdRef.detectChanges();
   }
 
   ngOnDestroy(): void {
